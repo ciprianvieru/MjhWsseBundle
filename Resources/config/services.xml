@@ -9,6 +9,7 @@
       class="MJH\WsseBundle\Security\Authentication\Provider\WsseProvider" public="false">
         <argument></argument> <!-- User Provider -->
         <argument type="service" id="doctrine.orm.entity_manager" />
+        <argument></argument> <!-- Lifetime -->
         <!--<argument type="service" id="monolog.logger" />-->
     </service>
 
