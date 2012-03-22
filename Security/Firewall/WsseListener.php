@@ -25,43 +25,38 @@ class WsseListener implements ListenerInterface
     {
         $request = $event->getRequest();
 
-        if ( !$request->headers->has( 'x-wsse' ) )
+        if ($request->headers->has('x-wsse'))
         {
-            return;
-        }
+            $wsseRegex = '/UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([^"]+)", Created="([^"]+)"/';
 
-        $wsseRegex = '/UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([^"]+)", Created="([^"]+)"/';
-
-        if ( preg_match( $wsseRegex, $request->headers->get( 'x-wsse' ), $matches ) )
-        {
-            $token = new WsseUserToken();
-            $token->setUser( $matches[ 1 ] );
-
-            $token->digest = $matches[ 2 ];
-            $token->nonce = $matches[ 3 ];
-            $token->created = $matches[ 4 ];
-
-            try
+            if (preg_match($wsseRegex, $request->headers->get('x-wsse'), $matches))
             {
-                $returnValue = $this->authenticationManager->authenticate( $token );
+                $token = new WsseUserToken();
+                $token->setUser( $matches[ 1 ] );
 
-                if ( $returnValue instanceof TokenInterface )
+                $token->digest = $matches[ 2 ];
+                $token->nonce = $matches[ 3 ];
+                $token->created = $matches[ 4 ];
+
+                try
                 {
-                    $result = $this->securityContext->setToken( $returnValue );
-                    //throw new \Exception($returnValue->getUsername());
-                    return $result;
-                }
-                else if ( $returnValue instanceof Response )
+                    $returnValue = $this->authenticationManager->authenticate( $token );
+
+                    if ( $returnValue instanceof TokenInterface )
+                    {
+                        return $this->securityContext->setToken($returnValue);
+                    }
+                    else if ($returnValue instanceof Response)
+                    {
+                        return $event->setResponse($returnValue);
+                    }
+                } catch (\Exception $e)
                 {
-                    return $event->setResponse( $returnValue );
+                    echo "exception caught " . $e->getMessage();
                 }
-            } catch (\Exception $e)
-            {
-                echo "exception caught " . $e->getMessage();
             }
-
-
         }
+        
         $response = new Response();
         $response->setStatusCode( 403 );
         $event->setResponse( $response );
