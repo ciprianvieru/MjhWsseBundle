@@ -14,11 +14,13 @@ class WsseProvider extends ContainerAware implements AuthenticationProviderInter
 {
     private $userProvider;
     private $em;
+    private $lifetime;
 
-    public function __construct( UserProviderInterface $userProvider, EntityManager $em )
+    public function __construct( UserProviderInterface $userProvider, EntityManager $em, $lifetime )
     {
         $this->userProvider = $userProvider;
         $this->em = $em;
+        $this->setLifetime($lifetime);
     }
 
     public function authenticate( TokenInterface $token )
@@ -36,7 +38,7 @@ class WsseProvider extends ContainerAware implements AuthenticationProviderInter
             )
             {
                 $authenticatedToken = new WsseUserToken(array('IS_AUTHENTICATED'));
-                $authenticatedToken->setUser( $user->getAuthToken() );
+                $authenticatedToken->setUser($user);
                 $authenticatedToken->setAuthenticated( TRUE );
 
                 return $authenticatedToken;
@@ -59,16 +61,16 @@ class WsseProvider extends ContainerAware implements AuthenticationProviderInter
                 ($diff->i * 60) +
                 ($diff->s);
 
-        // Validate timestamp is recent within 5 minutes
-        if ( $seconds > 300 )
+        // Validate timestamp is recent within supplied expiry time
+        if ( $seconds > $this->lifetime )
         {
             throw new \Exception('Expired timestamp.  Seconds: ' . $seconds);
         }
 
-        // Validate nonce is unique within 5 minutes
+        // Validate nonce is unique within supplied expiry time
         $rep = $this->em->getRepository( 'MjhWsseBundle:Nonce' );
 
-        if ( !$rep->verifyAndPersistNonce( $nonce, $username, 300 ) )
+        if ( !$rep->verifyAndPersistNonce( $nonce, $username, $this->lifetime) )
         {
             throw new NonceExpiredException('Previously used nonce detected');
         }
@@ -83,5 +85,14 @@ class WsseProvider extends ContainerAware implements AuthenticationProviderInter
     public function supports( TokenInterface $token )
     {
         return $token instanceof WsseUserToken;
+    }
+
+    protected function setLifetime( $lifetime )
+    {
+        if (!is_numeric($lifetime) || $lifetime <= 0)
+        {
+            throw new \InvalidArgumentException("Nonce lifetime must be greater than 0");
+        }
+        $this->lifetime = $lifetime;
     }
 }
