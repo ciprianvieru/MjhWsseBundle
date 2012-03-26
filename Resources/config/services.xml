@@ -5,6 +5,9 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
 <services>
+
+    <service id="wsse.security.authentication.entry_point" class="MJH\WsseBundle\Security\EntryPoint\WsseEntryPoint" />
+
     <service id="wsse.security.authentication.provider"
       class="MJH\WsseBundle\Security\Authentication\Provider\WsseProvider" public="false">
         <argument></argument> <!-- User Provider -->
@@ -17,12 +20,12 @@
       class="MJH\WsseBundle\Security\Firewall\WsseListener" public="false">
         <argument type="service" id="security.context"/>
         <argument type="service" id="security.authentication.manager" />
-
+        <argument type="service" id="wsse.security.authentication.entry_point" />
     </service>
-    
+
     <!--
     <service id="wn_affiliate.affiliate_manager" class="WN\MjhWsseBundle\Security\Authentication\Provider\AffiliateProvider">
-    
+
     </service>
     -->
 </services>
