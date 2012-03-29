@@ -31,10 +31,15 @@ class WsseListener implements ListenerInterface
         {
             return;
         }
+        $wsseHeader =  trim($request->headers->get('x-wsse'));
+        if (!strlen($wsseHeader))
+        {
+            return;
+        }
 
         $wsseRegex = '/UsernameToken Username="([^"]+)", PasswordDigest="([^"]+)", Nonce="([^"]+)", Created="([^"]+)"/';
 
-        if (preg_match($wsseRegex, $request->headers->get('x-wsse'), $matches))
+        if (preg_match($wsseRegex, $wsseHeader, $matches))
         {
             $token = new WsseUserToken();
             $token->setUser( $matches[ 1 ] );
