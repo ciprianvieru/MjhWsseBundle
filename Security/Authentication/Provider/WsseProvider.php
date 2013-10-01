@@ -37,7 +37,7 @@ class WsseProvider extends ContainerAware implements AuthenticationProviderInter
                 $user->getAuthSecret() )
             )
             {
-                $authenticatedToken = new WsseUserToken(array('IS_AUTHENTICATED'));
+                $authenticatedToken = new WsseUserToken($user->getRoles());
                 $authenticatedToken->setUser($user);
                 $authenticatedToken->setAuthenticated( TRUE );
 
