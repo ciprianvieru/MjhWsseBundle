@@ -16,7 +16,7 @@ class WsseEntryPoint implements AuthenticationEntryPointInterface
             $e = $authException;
             $ret = array();
             while($e) {
-                $ret[] = $e->getMessage();
+                $ret[] = sprintf('%s(%s)', get_class($e), $e->getMessage());
                 $e = $e->getPrevious();
             }
             $ret = json_encode($ret);
