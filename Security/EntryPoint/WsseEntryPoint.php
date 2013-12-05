@@ -11,8 +11,17 @@ class WsseEntryPoint implements AuthenticationEntryPointInterface
 {
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        $response = new Response();
-        $response->setStatusCode(403);
+        $ret = '';
+        if ($request->get('debug')) {
+            $e = $authException;
+            $ret = array();
+            while($e) {
+                $ret[] = $e->getMessage();
+                $e = $e->getPrevious();
+            }
+            $ret = json_encode($ret);
+        }
+        $response = new Response($ret, 403);
 
         return $response;
     }
