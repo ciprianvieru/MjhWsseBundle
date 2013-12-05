@@ -63,7 +63,7 @@ class WsseListener implements ListenerInterface
             } catch (\Exception $e)
             {
                 //echo "exception caught " . $e->getMessage();
-                $event->setResponse($this->entryPoint->start($request, new AuthenticationException("Foo({$token})", $e)));
+                $event->setResponse($this->entryPoint->start($request, new AuthenticationException("Foo({$token})", null, $e)));
             }
         }
 
