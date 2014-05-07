@@ -27,6 +27,26 @@ class WsseListener implements ListenerInterface
     public function handle( GetResponseEvent $event )
     {
         $request = $event->getRequest();
+        if ($request->getMethod() == 'OPTIONS') {
+            $request = $event->getRequest();
+            $response = new Response('');
+            $headers = preg_split('/,\s*/', $request->headers->get('Access-Control-Request-Headers', ''));
+            $allHeaders = implode(', ', array_unique(array_merge($headers, array(
+                'x-requested-with',
+                'x-wsse'
+            ))));
+
+            $allMethods = implode(', ', array(
+                'GET', 'POST', 'PUT', 'DELETE', 'HEAD'
+            ));
+            $response->headers->add(array(
+                'Access-Control-Allow-Origin' => $request->headers->get('Origin', '*'),
+                'Access-Control-Allow-Headers' => $allHeaders,
+                'Access-Control-Allow-Method' => $allMethods,
+            ));
+            
+            return $event->setResponse($response);
+        }
         if (!$request->headers->has('x-wsse'))
         {
             return;
