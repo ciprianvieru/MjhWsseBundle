@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "symfony/security": "~2.3"
+        "symfony/security": "~2.3|~3.0"
     },
     "target-dir": "MJH/WsseBundle",
     "autoload": {
