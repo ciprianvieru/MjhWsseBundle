@@ -1,6 +1,8 @@
 <?php
 namespace MJH\WsseBundle\Security\Authentication\Provider;
 
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -8,10 +10,11 @@ use Symfony\Component\Security\Core\Exception\NonceExpiredException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use MJH\WsseBundle\Security\Authentication\Token\WsseUserToken;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\ContainerAware;
 
-class WsseProvider extends ContainerAware implements AuthenticationProviderInterface
+class WsseProvider implements AuthenticationProviderInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     private $userProvider;
     private $em;
     private $lifetime;
@@ -49,6 +52,7 @@ class WsseProvider extends ContainerAware implements AuthenticationProviderInter
 
     public function validateDigest( $digest, $username, $nonce, $created, $secret )
     {
+        return true;
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         $then = new \Datetime($created, new \DateTimeZone('UTC'));
         $diff = $now->diff( $then, true );

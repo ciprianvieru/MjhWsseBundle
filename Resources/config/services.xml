@@ -18,16 +18,10 @@
 
     <service id="wsse.security.authentication.listener"
       class="MJH\WsseBundle\Security\Firewall\WsseListener" public="false">
-        <argument type="service" id="security.context"/>
+        <argument type="service" id="security.token_storage"/>
         <argument type="service" id="security.authentication.manager" />
         <argument type="service" id="wsse.security.authentication.entry_point" />
     </service>
-
-    <!--
-    <service id="wn_affiliate.affiliate_manager" class="WN\MjhWsseBundle\Security\Authentication\Provider\AffiliateProvider">
-
-    </service>
-    -->
 </services>
 
 </container>

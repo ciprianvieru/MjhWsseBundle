@@ -6,19 +6,19 @@ use \DateTime;
 
 class WsseRequest
 {
-    private $username;
-    private $secret;
+    protected $username;
+    protected $secret;
 
-    private $digest;
-    private $nonce;
-    private $timestamp;
+    protected $digest;
+    protected $nonce;
+    protected $timestamp;
 
-    private $url;
-    private $post_data = NULL;
+    protected $url;
+    protected $post_data = NULL;
 
-    private $result = NULL;
-    private $error = NULL;
-    private $errorcode = NULL;
+    protected $result = NULL;
+    protected $error = NULL;
+    protected $errorcode = NULL;
 
     public function __construct( $url, $post_data = NULL, $username = NULL, $secret = NULL )
     {
@@ -48,7 +48,7 @@ class WsseRequest
         $this->post_data = $post_data;
     }
 
-    private function setDigest()
+    protected function setDigest()
     {
         $this->setTimestamp();
         $this->setNonce();
@@ -66,28 +66,28 @@ class WsseRequest
         return $this->digest;
     }
 
-    private function setTimestamp()
+    protected function setTimestamp()
     {
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         $this->timestamp = (string)$now->format( 'Y-m-d\TH:i:s\Z' );
     }
 
-    private function getTimestamp()
+    protected function getTimestamp()
     {
         return $this->timestamp;
     }
 
-    private function setNonce()
+    protected function setNonce()
     {
         $this->nonce = substr( base64_encode( sha1( time() . 'salt' ) ), 0, 16 );
     }
 
-    private function getNonce()
+    protected function getNonce()
     {
         return $this->nonce;
     }
 
-    private function getWsseHeader()
+    protected function getWsseHeader()
     {
         return sprintf( 'X-WSSE: UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"',
             $this->username,
@@ -97,7 +97,7 @@ class WsseRequest
         );
     }
 
-    private function setResult( $result )
+    protected function setResult( $result )
     {
         $this->result = $result;
     }
@@ -107,7 +107,7 @@ class WsseRequest
         return $this->result;
     }
 
-    private function setError( $error )
+    protected function setError( $error )
     {
         $this->error = $error;
     }
@@ -117,7 +117,7 @@ class WsseRequest
         return $this->error;
     }
 
-    private function setErrorCode( $errorcode )
+    protected function setErrorCode( $errorcode )
     {
         $this->errorcode = $errorcode;
     }
@@ -144,7 +144,7 @@ class WsseRequest
         return $this->sendCurlRequest();
     }
 
-    private function sendCurlRequest()
+    protected function sendCurlRequest()
     {
         $headers = array(
 //            'Content-Type: application/json; charset=utf-8',
@@ -184,4 +184,38 @@ class WsseRequest
         return true;
 
     }
+
+    /**
+     * @return mixed
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSecret()
+    {
+        return $this->secret;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return null
+     */
+    public function getPostData()
+    {
+        return $this->post_data;
+    }
+
+    
 }
